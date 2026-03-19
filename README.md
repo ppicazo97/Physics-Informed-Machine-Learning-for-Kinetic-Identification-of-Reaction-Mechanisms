@@ -13,8 +13,6 @@ The repository includes:
 
 ## Repository Contents
 
-A recommended repository structure is:
-
 ```text
 .
 ├── README.md
