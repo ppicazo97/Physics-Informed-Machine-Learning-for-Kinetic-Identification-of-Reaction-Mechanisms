@@ -1,14 +1,41 @@
 # ML-KIRM: Machine Learning Framework for Interpretable Kinetic Model Discovery
 
-This repository implements **ML-KIRM**, a physics-informed machine learning framework developed to identify **interpretable, closed-form kinetic models** from time-series data, consistent with established kinetic theory.
+This repository contains the code, datasets, and supporting files used for the ML-KIRM framework presented in the paper. ML-KIRM is a physics-informed machine learning framework developed to identify **interpretable, closed-form kinetic models** from time-series data, consistent with established kinetic theory.
 
-The framework learns governing equations of the form:
+The repository includes:
 
-$$
-\frac{dx}{dt} = f(x)
-$$
+- the code used to generate the synthetic datasets
+- the code used to train the ML-KIRM models
+- the datasets used in the paper in CSV format
+- a script for reproducing the main figures
 
-where $x$ represents the extent (or state variable) and $f(x)$ captures the underlying reaction mechanisms.
+---
+
+## Repository Contents
+
+A recommended repository structure is:
+
+```text
+.
+├── README.md
+├── ML_KIRM.py
+├── dataset_prep.py
+├── figures.py
+├── data/
+│   ├── data_poly_isocuring.csv
+│   ├── data_CB_cryst_90.csv
+│   ├── data_eggyolk_SV.csv
+│   ├── data_eggalbumen_SV.csv
+│   ├── data_PEEK_253.csv
+│   └── data_AvocadoPuree.csv
+├── Results/
+│   ├── prediced_data_poly_isocuring.csv
+│   ├── prediced_data_CB_cryst_90.csv
+│   ├── prediced_data_eggyolk_SV.csv
+│   ├── prediced_data_eggalbumen_SV.csv
+│   ├── prediced_data_PEEK_253.csv
+│   └── prediced_data_AvocadoPuree.csv
+```
 
 ---
 
@@ -36,33 +63,69 @@ Here, $\Theta(x)$ represents a library of candidate nonlinear functions and $\Xi
 
 ---
 
-## Model Architecture
+## Included Codes
 
-The ML-KIRM framework is implemented as a neural network that embeds kinetic theory directly into its structure.
+### 1. `dataset_prep.py`
+This script generates the kinetic datasets used as inputs for model training and testing. It saves the datasets as CSV files in the `data/` directory.
 
-The architecture consists of:
+The script currently supports the following materials:
 
-- **Input layer**: reaction extent $x$  
-- **Custom activation layer**: domain-informed kinetic functions  
-- **Output layer**: sparse linear combination of activated functions  
+| ID | Material / Process | Output File |
+|----|--------------------|-------------|
+| `1` | SC-1008 - cure iso | `data_poly_isocuring.csv` |
+| `2` | SC-1008 - cure dyn | `data_poly_dyncuring.csv` |
+| `3` | Cocoa Butter - iso crystallization (Avrami) | `data_CB_cryst_90.csv` |
+| `4` | Egg Yolk Gelation - Sous Vide | `data_eggyolk_SV.csv` |
+| `5` | Egg Albumen Gelation - Sous Vide | `data_eggalbumen_SV.csv` |
+| `6` | PEEK Iso Crystallization | `data_PEEK_253.csv` |
+| `7` | Avocado Browning | `data_AvocadoPuree.csv` |
 
-Each activation corresponds to a candidate kinetic mechanism $f_i(x)$, parameterized by trainable coefficients (e.g., $m$, $n$, $p$), constrained within physically meaningful ranges.
+Each generated dataset contains:
 
-The resulting model takes the form:
+- `t`: time
+- `T`: temperature
+- `x`: extent / state variable
+- `xdot`: rate
+- `idx`: identifier associated with the processing condition
+
+---
+
+### 2. `ML_KIRM.py`
+This is the main training script used for kinetic model discovery.
+
+The script:
+- loads a selected dataset from CSV
+- trains candidate ML-KIRM models using physics-informed activation functions
+- applies LASSO regularization for sparse term selection
+- selects the final model based on predictive performance and sparsity
+- predicts **rate-space behavior** (`xdot`)
+- saves the predicted rate results to the `Results/` directory
+
+The learned model has the form:
 
 $$
 \frac{dx}{dt} = \sum_{i=1}^{n} \omega_i f_i(x)
 $$
 
 where:
-- $f_i(x)$ are candidate mechanisms from the kinetic feature library  
-- $\omega_i$ are learned coefficients  
+- $f_i(x)$ are candidate kinetic mechanisms
+- $\omega_i$ are learned coefficients
 
+---
+
+### 3. `figures.py`
+This script should be used to regenerate the main figures reported in the paper.
+
+Typical uses include:
+- plotting the original and predicted rate curves
+- generating comparison figures for selected materials
+- reproducing publication-ready figures from the saved CSV outputs in `Results/`
+- 
 ---
 
 ## Kinetic Feature Library
 
-The model includes a library of candidate functions derived from kinetic theory, representing common reaction behaviors:
+The ML-KIRM model uses a library of candidate kinetic functions derived from kinetic theory:
 
 | Mechanism | Functional Form |
 |----------|----------------|
@@ -74,154 +137,142 @@ The model includes a library of candidate functions derived from kinetic theory,
 | Avrami model | $k n (1 - x) [-\ln(1 - x)]^{(n-1)/n}$ |
 | Extended power law | $k n x [\ln(x)/k]^{(n-1)/n}$ |
 
-These functions capture diverse kinetic regimes, including:
-- deceleratory behavior  
-- sigmoidal kinetics  
-- nucleation and growth processes  
-- diffusion-limited regimes  
-
-The framework allows flexible combinations of these functions to model **multistage and overlapping kinetics**.
+These functions are embedded as trainable physics-informed activation functions in the neural network.
 
 ---
 
-## Sparse Regression
+## Datasets Used in the Paper
 
-To ensure interpretability, sparsity is enforced using **LASSO regularization**, which promotes selection of a minimal subset of active mechanisms.
+The CSV files included in the `data/` folder are the datasets used in the paper:
 
-The regularization term is defined as:
+- `data_poly_isocuring.csv`
+- `data_poly_dyncuring.csv`
+- `data_CB_cryst_90.csv`
+- `data_eggyolk_SV.csv`
+- `data_eggalbumen_SV.csv`
+- `data_PEEK_253.csv`
+- `data_AvocadoPuree.csv`
 
-$$
-\phi(w) = \|w\|_1
-$$
-
-This drives non-essential coefficients toward zero, yielding compact and interpretable kinetic expressions.
-
----
-
-## Training and Optimization
-
-Model training is performed using time-series datasets containing:
-
-- reaction extent ($x$)
-- time ($t$)
-- reaction rate ($\dot{x}$)
-
-A grid search is used to explore hyperparameters, including:
-
-- LASSO regularization strength ($\lambda$)
-- learning rate
-- batch size
-- number of active functions
-
-Each model is trained using **random combinations of kinetic functions**, enabling exploration of diverse candidate mechanisms.
+These datasets can be used directly with `ML_KIRM.py` without regeneration, or they can be regenerated with `dataset_prep.py`.
 
 ---
 
-## Quick Start
+## How to Run the Code
 
-1. Place your dataset in:
-```
-data_various/data_<material>.csv
-```
+### 1. Install dependencies
 
-2. Open the script and select a dataset:
-
-```python
-material = "1"
-```
-
-Available examples include:
-- `"1"` — Iso Curing SC1008  
-- `"avrami_90min_2"` — Cacao butter crystallization  
-- `"eggalbumen_SV"` — Egg gelation  
-- `"PEEK_253"` — PEEK crystallization  
-- `"AvocadoPuree"` — Enzymatic browning  
-
-3. Run the script:
+Create or activate your Python environment, then install the required packages:
 
 ```bash
-python your_script.py
-```
-
-4. Outputs will be saved to:
-
-```
-data/predicted_data_<material>_3func.csv
+pip install -r requirements.txt
 ```
 
 ---
 
-## Workflow
+### 2. Train ML-KIRM on a dataset
 
-1. Load dataset $(x, \dot{x}, t)$  
-2. Split into training and test sets  
-3. Generate random combinations of kinetic functions  
-4. Train models across hyperparameter configurations  
-5. Select best-performing model (based on test MSE)  
-6. Extract symbolic kinetic expression  
-7. Predict $\dot{x}$ over the full dataset  
-8. Integrate predicted rates to reconstruct $x(t)$  
-9. Evaluate performance and save outputs  
+Open `ML_KIRM.py` and set:
+
+```python
+material = 'eggalbumen_SV'
+```
+
+or whichever dataset label your script expects.
+
+Make sure the corresponding CSV file exists in the `data/` directory.
+
+Then run:
+
+```bash
+python ML_KIRM.py
+```
+
+The script will:
+- train candidate models
+- print the selected kinetic expression
+- save the predicted rate-space output to:
+
+```text
+Results/predicted_data_<material>_MLKIRM.csv
+```
 
 ---
 
-## Output
+### 3. Reproduce figures
 
-### Saved Data
+Once the training outputs are available, run:
 
+```bash
+python figures.py
 ```
-data/predicted_data_<material>_3func.csv
-```
 
-Includes:
-- original measurements
-- predicted rates
-- integrated state evolution
+This script should regenerate the main figures from the paper using the saved results and/or raw datasets.
 
 ---
 
-### Model Evaluation
+## Output Files
 
-Performance is evaluated in two domains:
+### Training output
+The main training script saves a CSV file containing:
 
-- **Rate space**: predicted vs. observed $\dot{x}$  
-- **State space**: reconstructed $x(t)$  
+- `t`
+- `x_original`
+- `xdot_original`
+- `xdot_pred`
 
-Metrics reported:
-- MSE, RMSE, MAE, R²  
+Example:
+
+```text
+Results/predicted_data_eggalbumen_SV_MLKIRM.csv
+```
+
+### Console output
+The training script also reports:
+- the selected symbolic kinetic expression
+- MSE
+- RMSE
+- MAE
+- R²
+- number of functions in the model
+- number of active terms after LASSO
+- selected hyperparameters
+
+---
+
+## Model Selection Strategy
+
+Sparse regression through LASSO remains the primary sparsity-promoting mechanism in the ML-KIRM framework.
+
+In the current implementation:
+- candidate models with 1, 2, and 3 functions are explored
+- LASSO determines which terms remain active
+- the final model is selected by favoring the **fewest active terms** that meet the specified fit thresholds
+
+This preserves the central role of sparse regression while promoting interpretable closed-form kinetics.
 
 ---
 
 ## Notes
 
-- Model selection is performed using the test set.  
-  This is suitable for exploratory analysis but may introduce optimistic bias in formal benchmarking.
-
-- Function combinations are randomly generated for each run (no fixed seed).
-
-- The model enforces:
-  - non-negative coefficients  
-  - bounded parameters  
-  - domain clipping $x \in (0,1)$ for numerical stability  
+- The model predicts **rate-space behavior** (`xdot`) directly from `x`.
+- The current training script saves and evaluates only the predicted rate output.
+- Function combinations are randomly generated for each run, so results may vary.
+- Model selection is currently performed using the held-out test set, which is appropriate for exploratory studies but may introduce optimistic bias in formal benchmarking.
 
 ---
 
-## Dependencies
+## Requirements
 
-- Python 3.8+
-- NumPy
-- Pandas
-- Matplotlib
-- TensorFlow / Keras
+The required Python libraries are:
+
+- numpy
+- pandas
+- matplotlib
+- tensorflow
 - scikit-learn
 
-Install with:
-
-```bash
-pip install numpy pandas matplotlib tensorflow scikit-learn
-```
-
 ---
+
 
 ## Authors
 
@@ -232,4 +283,4 @@ pip install numpy pandas matplotlib tensorflow scikit-learn
 
 ## Acknowledgments
 
-This work was developed for research in **data-driven kinetic modeling** and **equation discovery in materials systems**, with applications to polymer curing, crystallization, gelation, and enzymatic processes.
+This work was developed for research in **data-driven kinetic modeling** and **equation discovery in materials systems**, with applications to polymer curing, crystallization, gelation, and food/material degradation processes.
