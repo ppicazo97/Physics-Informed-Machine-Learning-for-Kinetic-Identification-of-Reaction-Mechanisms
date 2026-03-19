@@ -70,12 +70,12 @@ The script currently supports the following materials:
 
 | ID | Material / Process | Output File |
 |----|--------------------|-------------|
-| `1` | SC-1008 - cure iso | `data_poly_isocuring.csv` |
-| `2` | SC-1008 - cure dyn | `data_poly_dyncuring.csv` |
-| `3` | Cocoa Butter - iso crystallization (Avrami) | `data_CB_cryst_90.csv` |
+| `1` | Isothermal Curing of a Thermoset Polymer  | `data_poly_isocuring.csv` |
+| `2` | Dynamic Curing of a Thermoset Polymer` | `data_poly_dyncuring.csv` |
+| `3` | Isothermal crystallization of Cocoa Butter| `data_CB_cryst_90.csv` |
 | `4` | Egg Yolk Gelation - Sous Vide | `data_eggyolk_SV.csv` |
 | `5` | Egg Albumen Gelation - Sous Vide | `data_eggalbumen_SV.csv` |
-| `6` | PEEK Iso Crystallization | `data_PEEK_253.csv` |
+| `6` | Isothermal Crystallization of a Thermoplastic Polymer (PEEK) | `data_PEEK_253.csv` |
 | `7` | Avocado Browning | `data_AvocadoPuree.csv` |
 
 Each generated dataset contains:
