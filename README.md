@@ -1,4 +1,4 @@
-# ML-KIRM: Machine Learning Framework for Interpretable Kinetic Model Discovery
+# ML-KIRM: Physics-Informed Machine Learning for Kinetic Identification of Reaction Mechanisms
 
 This repository contains the code, datasets, and supporting files used for the ML-KIRM framework presented in the paper. ML-KIRM is a physics-informed machine learning framework developed to identify **interpretable, closed-form kinetic models** from time-series data, consistent with established kinetic theory.
 
