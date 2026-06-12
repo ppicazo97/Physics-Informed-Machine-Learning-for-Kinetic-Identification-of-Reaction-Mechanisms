@@ -20,9 +20,9 @@ from tensorflow.keras.constraints import NonNeg, Constraint
 
 
 E = False
-material = 'PEEK_253'
+material = 'toray150'
 
-SEEDS = [23,35,36,43]
+SEEDS = [99]
 
 df = pd.read_csv("data/data_" + str(material) + ".csv")
 time = df['t'].values
