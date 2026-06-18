@@ -17,6 +17,8 @@ The repository includes:
 
 ├── README.md
 ├── ML_KIRM.py
+├── ML_KIRM_SEEDS.py
+├── ML_KIRM_Ablation.py
 ├── dataset_prep.py
 ├── figures.py
 ├── data/
@@ -25,6 +27,7 @@ The repository includes:
 │   ├── data_eggyolk_SV.csv
 │   ├── data_eggalbumen_SV.csv
 │   ├── data_PEEK_253.csv
+│   ├── data_prepreg200.csv
 │   └── data_AvocadoPuree.csv
 ├── Results/
 │   ├── prediced_data_poly_isocuring.csv
@@ -32,6 +35,8 @@ The repository includes:
 │   ├── prediced_data_eggyolk_SV.csv
 │   ├── prediced_data_eggalbumen_SV.csv
 │   ├── prediced_data_PEEK.csv
+│   ├── prediced_data_unfiltered_prepreg200.csv
+│   ├── prediced_data_prepreg200.csv
 │   └── prediced_data_AvocadoPuree.csv
 ```
 
@@ -77,6 +82,7 @@ The script currently supports the following materials:
 | `5` | Egg Albumen Gelation - Sous Vide | `data_eggalbumen_SV.csv` |
 | `6` | Isothermal Crystallization of a Thermoplastic Polymer (PEEK) | `data_PEEK_253.csv` |
 | `7` | Avocado Puree Browning | `data_AvocadoPuree.csv` |
+| `8` | Isothermal Curing of an Epoxy Prepreg | `data_prepreg200.csv` |
 
 Each generated dataset contains:
 
@@ -142,6 +148,7 @@ These functions are embedded as trainable physics-informed activation functions 
 
 The CSV files included in the `data/` folder are the datasets used in the paper:
 
+Synthetic:
 - `data_poly_isocuring.csv`
 - `data_poly_dyncuring.csv`
 - `data_CB_cryst_90.csv`
@@ -149,8 +156,15 @@ The CSV files included in the `data/` folder are the datasets used in the paper:
 - `data_eggalbumen_SV.csv`
 - `data_PEEK_253.csv`
 - `data_AvocadoPuree.csv`
+Experimental:
+- `data_prepreg150.csv`
+- `data_prepreg160.csv`
+- `data_prepreg170.csv`
+- `data_prepreg180.csv`
+- `data_prepreg190.csv`
+- `data_prepreg200.csv`
 
-These datasets can be used directly with `ML_KIRM.py` without regeneration, or they can be regenerated with `dataset_prep.py`.
+Synthetic datasets can be used directly with `ML_KIRM.py` without regeneration, or they can be regenerated with `dataset_prep.py`.
 
 ---
 
