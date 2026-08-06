@@ -1,11 +1,11 @@
-# ML-KIRM: Physics-Informed Machine Learning for Kinetic Identification of Reaction Mechanisms
+# ML-RKIM: Physics-Informed Machine Learning for Reaction Kinetics Identification and Modeling
 
-This repository contains the code, datasets, and supporting files used for the ML-KIRM framework presented in the paper. ML-KIRM is a physics-informed machine learning framework developed to identify **interpretable, closed-form kinetic models** from time-series data, consistent with established kinetic theory.
+This repository contains the code, datasets, and supporting files used for the ML-RKIM framework presented in the paper. ML-RKIM is a physics-informed machine learning framework developed to identify **interpretable, closed-form kinetic models** from time-series data, consistent with established kinetic theory.
 
 The repository includes:
 
 - the code used to generate the datasets
-- the code used to train the ML-KIRM models
+- the code used to train the ML-RKIM models
 - the datasets used in the paper in CSV format
 - a script for reproducing the main figures
 
@@ -44,7 +44,7 @@ The repository includes:
 
 ## Methodology
 
-ML-KIRM is designed to bridge data-driven modeling with physically meaningful kinetic representations. The framework consists of three primary steps:
+ML-RKIM is designed to bridge data-driven modeling with physically meaningful kinetic representations. The framework consists of three primary steps:
 
 1. Construction of a neural network with **physics-informed activation functions** representing candidate kinetic mechanisms  
 2. Training of the model using experimental or synthetic time-series data  
@@ -99,7 +99,7 @@ This is the main training script used for kinetic model discovery.
 
 The script:
 - loads a selected dataset from CSV
-- trains candidate ML-KIRM models using physics-informed activation functions
+- trains candidate ML-RKIM models using physics-informed activation functions
 - applies LASSO regularization for sparse term selection
 - selects the final model based on predictive performance and sparsity
 - predicts **kinetic rate behavior** (`xdot`)
@@ -128,7 +128,7 @@ Uses include:
 
 ## Kinetic Feature Library
 
-The ML-KIRM model uses a library of candidate kinetic functions derived from kinetic theory:
+The ML-RKIM model uses a library of candidate kinetic functions derived from kinetic theory:
 
 | Mechanism | Functional Form |
 |----------|----------------|
@@ -181,7 +181,7 @@ pip install -r requirements.txt
 
 ---
 
-### 2. Train ML-KIRM on a dataset
+### 2. Train ML-RKIM on a dataset
 
 Open `ML_KIRM.py` and set:
 
@@ -253,7 +253,7 @@ The training script also reports:
 
 ## Model Selection Strategy
 
-Sparse regression through LASSO remains the primary sparsity-promoting mechanism in the ML-KIRM framework.
+Sparse regression through LASSO remains the primary sparsity-promoting mechanism in the ML-RKIM framework.
 
 In the current implementation:
 - candidate models with 1, 2, and 3 functions are explored
